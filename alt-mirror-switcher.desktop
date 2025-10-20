@@ -4,4 +4,4 @@ Exec=alt-mirror-switcher
 Icon=altlinux
 Terminal=false
 Type=Application
-Categories=Utility;
+Categories=System;Tools;
