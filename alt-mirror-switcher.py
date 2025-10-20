@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 # Name: ALT Mirror Switcher
-# Version: 0.1
+# Version: 0.2
 # Autor: Aleksandr Shamaraev <shad@altlinux.org>
 # License: GPLv2+
 # URL: https://github.com/AlexanderShad
@@ -38,7 +38,7 @@ class Window(QMainWindow):
         print('getting specifically Alt repository lists')
         for _file in glob.glob(glob.escape(path_list) + "/*.list"):
             with open(_file) as file:
-                if '[alt]' in file.read():
+                if '[alt]' or '[p11]' in file.read():
                     self._list.append(_file)
 
         #заполнение выпадающего списка зерка и опредление активного
