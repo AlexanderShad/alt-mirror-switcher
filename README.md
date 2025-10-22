@@ -12,6 +12,7 @@ Link to main repository: https://altlinux.space/aleksandershad/alt-mirror-switch
 
 ___
 
+**ALT Переключатель Зеркал**
 
 Простой переключатель локальных зеркал для ALT.
 

@@ -1,0 +1,15 @@
+**Changelog**
+
+**bump version 0.2.1 (21.10.2025)**
+
+- fix: load just altlinux mirror
+- added link to main repository in Readme.md
+- fix: *.desktop categories
+
+**bump version 0.2 (20.10.2025)**
+
+- added support for p11
+
+**bump version 0.1 (19.10.2025)**
+
+- alt-mirror-switcher 
