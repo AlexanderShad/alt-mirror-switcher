@@ -1,5 +1,11 @@
 **Changelog**
 
+**bump version 0.3.0 (29.10.2025)**
+
+- add: labels and protocols
+- change for branch [p1*
+
+
 **bump version 0.2.1 (21.10.2025)**
 
 - fix: load just altlinux mirror

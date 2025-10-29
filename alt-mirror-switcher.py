@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 # Name: ALT Mirror Switcher
-# Version: 0.2.1
+# Version: 0.3.0
 # Autor: Aleksandr Shamaraev <shad@altlinux.org>
 # License: GPLv2+
 # URL: https://github.com/AlexanderShad
@@ -11,23 +11,24 @@ import os
 import sys
 import glob
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QPushButton, QLabel, QWidget, QVBoxLayout, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import QRadioButton, QLabel, QWidget, QVBoxLayout, QMessageBox
 
 class Window(QMainWindow):
 
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("ALT mirror switcher")
+        self.setWindowTitle("ALT mirror switcher - 0.3.0")
         self.resize(200, 50)
 
-        #пусть до файлов зеркал
+        #путь до файлов зеркал
         path_list = '/etc/apt/sources.list.d/'
         print('path: '+path_list)
         
         self._list = []
 
-        _active = ''
+        self._active = ''
         self._active_f = ''
 
         _tmp = ''
@@ -38,10 +39,10 @@ class Window(QMainWindow):
         print('getting specifically Alt repository lists')
         for _file in glob.glob(glob.escape(path_list) + "/*.list"):
             with open(_file) as file:
-                if ('[alt]' or '[p11]') in file.read():
+                if ('[alt]' or '[p1') in file.read():
                     self._list.append(_file)
 
-        #заполнение выпадающего списка зерка и опредление активного
+        #заполнение выпадающего списка зеркал и опредление активного
         print('filling in the drop-down list of mirrors and determining the active one')
         for _t in self._list:        
             with open(_t,'r') as _f:
@@ -51,7 +52,7 @@ class Window(QMainWindow):
                     break
                 for _s in _f:
                     if _s.lstrip()[0:3] == 'rpm':
-                        _active = _tmp
+                        self._active = _tmp
                         self._active_f = _t
                         break
 
@@ -61,14 +62,36 @@ class Window(QMainWindow):
 
         self._button.clicked.connect(self.set_mirror)
 
-        self._lable = QLabel()
+        _n_labele = QLabel('Active mirror:')
 
-        self._lable.setText(_active)
+        if self._active != '':
+            self._lable = QLabel('<b>' + self._active + '<b>')
+        else:
+            self._lable = QLabel('<b>No active mirror!<b>')
+
+        _n2_labele = QLabel('Protocols:')
+
+        self._r1_button = QRadioButton('http')
+        self._r1_button.setChecked(True)
+        self._r2_button = QRadioButton('ftp')
+        self._r3_button = QRadioButton('rsync')
+        self._r4_button = QRadioButton('file')
+      
+        _n3_labele = QLabel('Mirrors list:')
 
         self._msg = QMessageBox()
 
         _layout = QVBoxLayout()
+        _layout2 = QHBoxLayout()
+        _layout.addWidget(_n_labele)
         _layout.addWidget(self._lable)
+        _layout.addWidget(_n2_labele)
+        _layout2.addWidget(self._r1_button)
+        _layout2.addWidget(self._r2_button)
+        _layout2.addWidget(self._r3_button)
+        _layout2.addWidget(self._r4_button)
+        _layout.addLayout(_layout2)
+        _layout.addWidget(_n3_labele)
         _layout.addWidget(self._combobox)
         _layout.addWidget(self._button)
 
@@ -78,25 +101,11 @@ class Window(QMainWindow):
         self.setCentralWidget(_container)
 
     def set_mirror(self):
-        if self._lable.text().strip() == self._combobox.currentText().strip():
+        if self._active.strip() == self._combobox.currentText().strip():
             self._msg.setText("This mirror has already been selected")
             self._msg.exec()
         else:
-            # ремарим активное зеркало
-            print('disabled: ' + self._active_f)
-            _tmp_f = self._active_f+'.tmp'
-            os.rename(self._active_f, _tmp_f)
-            with open(_tmp_f, 'r') as _old_f, open(self._active_f, 'w') as _new_f:
-                for _s in _old_f:
-                    if _s.lstrip()[0:3] == 'rpm':
-                        _new_f.write('#' + _s)
-                    else:
-                        _new_f.write(_s)
-            os.remove(_tmp_f)
-            
-            #устанавливаем новое зеркало
-            print('setting: ' + self._combobox.currentText())
-
+            #ищем новое зеркало
             _new_list = ''
 
             for _t in self._list:        
@@ -106,19 +115,71 @@ class Window(QMainWindow):
                             print('find :' + _t)
                             _new_list = _t
                             break
+
+            #выбор протокола для установки
+            _protocol = ''
+            _flag_protocol = 0
+
+            if self._r1_button.isChecked():
+                _protocol = 'http:'
+                _flag_protocol = 1
             
+            if self._r2_button.isChecked():
+                _protocol = 'ftp:'
+                _flag_protocol = 1
+
+            if self._r3_button.isChecked():
+                _protocol = 'rsync:'
+                _flag_protocol = 1
+
+            if self._r4_button.isChecked():
+                _protocol = 'file:'
+                _flag_protocol = 1
+
+            if _flag_protocol == 0:
+                print ('set default protocol: http')
+                _protocol = 'http:'
+
+            # проверка на наличие протокола
+            __flag = 0
+            with open(_new_list, 'r') as __f:
+                for _s in __f:
+                    if _protocol in _s:
+                        __flag = 1
+                        break
+            if __flag != 1:
+                self._msg.setText("No required protocol! Stopped.")
+                self._msg.exec()
+                return
+
+            # ремарим активное зеркало
+            if self._active != '':
+                print('disabled: ' + self._active_f)
+                _tmp_f = self._active_f+'.tmp'
+                os.rename(self._active_f, _tmp_f)
+                with open(_tmp_f, 'r') as _old_f, open(self._active_f, 'w') as _new_f:
+                    for _s in _old_f:
+                        if _s.lstrip()[0:3] == 'rpm':
+                            _new_f.write('#' + _s)
+                        else:
+                            _new_f.write(_s)
+                os.remove(_tmp_f)
+            
+            #устанавливаем новое зеркало
+            print('setting: ' + self._combobox.currentText())
+           
             _tmp_f = _new_list+'.tmp'
             os.rename(_new_list, _tmp_f)
             with open(_tmp_f, 'r') as _old_f, open(_new_list, 'w') as _new_f:
                 for _s in _old_f:
-                    if 'http' in _s:
+                    if _protocol in _s:
                         _new_f.write(_s.strip().replace("#", "", 1)+'\n')
                     else:
                         _new_f.write(_s)
             os.remove(_tmp_f)
 
             self._active_f = _new_list
-            self._lable.setText(self._combobox.currentText())
+            self._lable.setText('<b>' + self._combobox.currentText() + '<b>')
             
             self._msg.setText("Done!")
             self._msg.exec()
