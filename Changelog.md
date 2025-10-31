@@ -1,5 +1,9 @@
 **Changelog**
 
+**bump version 0.3.1 (31.10.2025)**
+
+- fix: reading *.list
+
 **bump version 0.3.0 (29.10.2025)**
 
 - add: labels and protocols
