@@ -1,5 +1,9 @@
 **Changelog**
 
+**bump version 0.4.0 (14.11.2025)**
+
+- options: disable /etc/apt/sources.list
+
 **bump version 0.3.1 (31.10.2025)**
 
 - fix: reading *.list

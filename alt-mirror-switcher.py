@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 #
 # Name: ALT Mirror Switcher
-# Version: 0.3.1
+# Version: 0.4.0
 # Autor: Aleksandr Shamaraev <shad@altlinux.org>
 # License: GPLv2+
-# URL: https://github.com/AlexanderShad
+# URL: https://altlinux.space/aleksandershad
 #
 
 import os
@@ -12,14 +12,14 @@ import sys
 import glob
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QPushButton, QHBoxLayout
-from PySide6.QtWidgets import QRadioButton, QLabel, QWidget, QVBoxLayout, QMessageBox
+from PySide6.QtWidgets import QRadioButton, QLabel, QWidget, QVBoxLayout, QMessageBox, QCheckBox
 
 class Window(QMainWindow):
 
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("ALT mirror switcher - 0.3.1")
+        self.setWindowTitle("ALT mirror switcher - 0.4.0")
         self.resize(200, 50)
 
         #путь до файлов зеркал
@@ -81,6 +81,11 @@ class Window(QMainWindow):
         self._r2_button = QRadioButton('ftp')
         self._r3_button = QRadioButton('rsync')
         self._r4_button = QRadioButton('file')
+
+        _n4_labele = QLabel('Options:')
+
+        self._checkbox = QCheckBox('disable /etc/apt/sources.list')
+        self._checkbox.setChecked(True)
       
         _n3_labele = QLabel('Mirrors list:')
 
@@ -96,6 +101,8 @@ class Window(QMainWindow):
         _layout2.addWidget(self._r3_button)
         _layout2.addWidget(self._r4_button)
         _layout.addLayout(_layout2)
+        _layout.addWidget(_n4_labele)
+        _layout.addWidget(self._checkbox)
         _layout.addWidget(_n3_labele)
         _layout.addWidget(self._combobox)
         _layout.addWidget(self._button)
@@ -186,6 +193,19 @@ class Window(QMainWindow):
             self._active_f = _new_list
             self._lable.setText('<b>' + self._combobox.currentText() + '<b>')
             
+            # ремарим /etc/apt/sources.list
+            if self._checkbox.isChecked():
+                print('disabled: /etc/apt/sources.list')
+                _tmp_f = '/etc/apt/sources.list.tmp'
+                os.rename('/etc/apt/sources.list', _tmp_f)
+                with open(_tmp_f, 'r') as _old_f, open('/etc/apt/sources.list', 'w') as _new_f:
+                    for _s in _old_f:
+                        if _s.lstrip()[0:3] == 'rpm':
+                            _new_f.write('#' + _s)
+                        else:
+                            _new_f.write(_s)
+                os.remove(_tmp_f)
+
             self._msg.setText("Done!")
             self._msg.exec()
 
