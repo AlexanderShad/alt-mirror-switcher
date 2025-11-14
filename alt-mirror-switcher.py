@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #
 # Name: ALT Mirror Switcher
-# Version: 0.4.0
+# Version: 0.4.1
 # Autor: Aleksandr Shamaraev <shad@altlinux.org>
 # License: GPLv2+
 # URL: https://altlinux.space/aleksandershad
@@ -19,7 +19,7 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("ALT mirror switcher - 0.4.0")
+        self.setWindowTitle("ALT mirror switcher - 0.4.1")
         self.resize(200, 50)
 
         #путь до файлов зеркал
@@ -30,6 +30,7 @@ class Window(QMainWindow):
 
         self._active = ''
         self._active_f = ''
+        self._active_protocol = ''
 
         _tmp = ''
 
@@ -59,6 +60,14 @@ class Window(QMainWindow):
                     if _s.lstrip()[0:3] == 'rpm':
                         self._active = _tmp
                         self._active_f = _t
+                        if 'http:' in _s:
+                            self._active_protocol = 'http:'
+                        if 'ftp:' in _s:
+                            self._active_protocol = 'ftp:'
+                        if 'rsync:' in _s:
+                            self._active_protocol = 'rsync:'
+                        if 'file:' in _s:
+                            self._active_protocol = 'file:'
                         break
 
         self._combobox.setEditable(False)
@@ -113,8 +122,32 @@ class Window(QMainWindow):
         self.setCentralWidget(_container)
 
     def set_mirror(self):
-        if self._active.strip() == self._combobox.currentText().strip():
-            self._msg.setText("This mirror has already been selected")
+        #выбор протокола для установки
+        _protocol = ''
+        _flag_protocol = 0
+
+        if self._r1_button.isChecked():
+            _protocol = 'http:'
+            _flag_protocol = 1
+            
+        if self._r2_button.isChecked():
+            _protocol = 'ftp:'
+            _flag_protocol = 1
+
+        if self._r3_button.isChecked():
+            _protocol = 'rsync:'
+            _flag_protocol = 1
+
+        if self._r4_button.isChecked():
+            _protocol = 'file:'
+            _flag_protocol = 1
+
+        if _flag_protocol == 0:
+            print ('set default protocol: http')
+            _protocol = 'http:'
+
+        if (self._active.strip() == self._combobox.currentText().strip()) and (self._active_protocol == _protocol):
+            self._msg.setText("This mirror and procol has already been selected!")
             self._msg.exec()
         else:
             #ищем новое зеркало
@@ -127,30 +160,6 @@ class Window(QMainWindow):
                             print('find :' + _t)
                             _new_list = _t
                             break
-
-            #выбор протокола для установки
-            _protocol = ''
-            _flag_protocol = 0
-
-            if self._r1_button.isChecked():
-                _protocol = 'http:'
-                _flag_protocol = 1
-            
-            if self._r2_button.isChecked():
-                _protocol = 'ftp:'
-                _flag_protocol = 1
-
-            if self._r3_button.isChecked():
-                _protocol = 'rsync:'
-                _flag_protocol = 1
-
-            if self._r4_button.isChecked():
-                _protocol = 'file:'
-                _flag_protocol = 1
-
-            if _flag_protocol == 0:
-                print ('set default protocol: http')
-                _protocol = 'http:'
 
             # проверка на наличие протокола
             __flag = 0
@@ -190,6 +199,8 @@ class Window(QMainWindow):
                         _new_f.write(_s)
             os.remove(_tmp_f)
 
+            self._active_protocol = _protocol
+            self._active = self._combobox.currentText()
             self._active_f = _new_list
             self._lable.setText('<b>' + self._combobox.currentText() + '<b>')
             

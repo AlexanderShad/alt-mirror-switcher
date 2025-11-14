@@ -1,5 +1,10 @@
 **Changelog**
 
+**bump version 0.4.1 (15.11.2025)**
+
+- fix: add: check protocol
+- fix: check mirror name 
+
 **bump version 0.4.0 (14.11.2025)**
 
 - options: disable /etc/apt/sources.list
