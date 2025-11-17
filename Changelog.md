@@ -1,5 +1,10 @@
 **Changelog**
 
+**bump version 0.4.2 (17.11.2025)**
+
+- added: localization
+- disable system *.list and enable /etc/apt/sources.list
+
 **bump version 0.4.1 (15.11.2025)**
 
 - fix: add: check protocol
