@@ -6,7 +6,6 @@
 # URL: https://altlinux.space/aleksandershad
 #
 
-import os
 import sys
 import glob
 import locale
@@ -16,7 +15,7 @@ from PySide6.QtWidgets import QRadioButton, QLabel, QWidget, QVBoxLayout, QMessa
 from gettext import gettext, bindtextdomain, textdomain
 
 from constants import version, alt_ms, locale_path, path_list, source_path
-from options import disable_source, disable_active, enabled_list
+from options import disable_source, disable_active, enabled_list, check_branch
 
 
 class Window(QMainWindow):
@@ -55,6 +54,13 @@ class Window(QMainWindow):
         super().__init__()
 
         self._setup_gettext()
+
+        self._msg = QMessageBox()
+
+        if check_branch(): # проверка совпадения текущего бранча на системе и пакета зеркал под этот бранч
+            self._msg.setText(gettext("A difference in branches was detected. If you are using Sisyphus, <b>install apt-conf-sisyphus</b>."))
+            self._msg.exec()
+            sys.exit()
 
         self.setWindowTitle("ALT mirror switcher - "+version)
         self.resize(200, 50)
@@ -141,8 +147,6 @@ class Window(QMainWindow):
 
       
         _n3_labele = QLabel(gettext("Mirrors list:"))
-
-        self._msg = QMessageBox()
 
         _layout = QVBoxLayout()
         _layout2 = QHBoxLayout()

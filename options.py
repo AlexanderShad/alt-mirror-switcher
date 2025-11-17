@@ -10,6 +10,16 @@ import os
 
 from constants import source_path
 
+def check_branch():
+    _active_branch = os.popen('rpm --eval %_priority_distbranch').read()
+    _active_mirror = os.popen('rpm -qa | grep apt-conf-').read()
+    if _active_branch in _active_mirror:
+        return True
+    elif ("p11" == _active_branch) and ("branch" in _active_mirror):
+        return True
+    else:
+        return False
+
 def enabled_list(_new_list, _protocol, x): #x - если это 1 то учитывать протокол, если 0, то нет
     _tmp_f = _new_list+'.tmp'
     os.rename(_new_list, _tmp_f)

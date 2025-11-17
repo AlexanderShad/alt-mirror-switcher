@@ -6,7 +6,7 @@
 # URL: https://altlinux.space/aleksandershad
 #
 
-version = "0.4.2"
+version = "0.4.3"
 
 alt_ms = "alt-mirror-switcher"
 
