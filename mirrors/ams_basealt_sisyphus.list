@@ -1,0 +1,15 @@
+# download.basealt.ru (basealt)
+
+# ALT Linux Sisyphus
+#rpm [alt] ftp://download.basealt.ru/pub/distributions/ALTLinux Sisyphus/x86_64 classic
+#rpm [alt] ftp://download.basealt.ru/pub/distributions/ALTLinux Sisyphus/x86_64-i586 classic
+#rpm [alt] ftp://download.basealt.ru/pub/distributions/ALTLinux Sisyphus/noarch classic
+
+#rpm [alt] http://download.basealt.ru/pub/distributions/ALTLinux Sisyphus/x86_64 classic
+#rpm [alt] http://download.basealt.ru/pub/distributions/ALTLinux Sisyphus/x86_64-i586 classic
+#rpm [alt] http://download.basealt.ru/pub/distributions/ALTLinux Sisyphus/noarch classic
+
+#rpm [alt] rsync://download.basealt.ru/ALTLinux Sisyphus/x86_64 classic
+#rpm [alt] rsync://download.basealt.ru/ALTLinux Sisyphus/x86_64-i586 classic
+#rpm [alt] rsync://download.basealt.ru/ALTLinux Sisyphus/noarch classic
+

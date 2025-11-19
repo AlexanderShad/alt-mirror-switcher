@@ -1,5 +1,9 @@
 **Changelog**
 
+**bump version 0.4.4 (19.11.2025)**
+
+- added mirror: download.basealt.ru
+
 **bump version 0.4.3 (18.11.2025)**
 
 - fix: checking the difference between branches

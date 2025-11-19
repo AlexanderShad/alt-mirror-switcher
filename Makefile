@@ -10,6 +10,7 @@ install-data:
 	cp -a *.py $(SHAREDIR)/$(NAME)
 	cp -a $(NAME).desktop $(SHAREDIR)/applications
 	cp -p -r locale $(SHAREDIR)
+	cp -p -r mirrors $(SHAREDIR)/$(NAME)
 
 install-bin:
 	install -Dm755 $(NAME) $(PREFIXBIN)/$(NAME)
