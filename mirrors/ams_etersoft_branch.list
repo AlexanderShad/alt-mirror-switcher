@@ -1,0 +1,6 @@
+# download.etersoft.ru (etersoft - only http)
+
+# ALT Platform 11
+#rpm [p11] http://download.etersoft.ru/pub/ALTLinux p11/branch/x86_64 classic
+#rpm [p11] http://download.etersoft.ru/pub/ALTLinux p11/branch/x86_64-i586 classic
+#rpm [p11] http://download.etersoft.ru/pub/ALTLinux p11/branch/noarch classic

@@ -1,0 +1,15 @@
+# mirror.mephi.ru (National Research Nuclear University "MEPhI")
+
+# ALT Platform 11
+#rpm [p11] ftp://mirror.mephi.ru/ALTLinux p11/branch/x86_64 classic gostcrypto
+#rpm [p11] ftp://mirror.mephi.ru/ALTLinux p11/branch/x86_64-i586 classic
+#rpm [p11] ftp://mirror.mephi.ru/ALTLinux p11/branch/noarch classic
+
+#rpm [p11] http://mirror.mephi.ru/ALTLinux p11/branch/x86_64 classic gostcrypto
+#rpm [p11] http://mirror.mephi.ru/ALTLinux p11/branch/x86_64-i586 classic
+#rpm [p11] http://mirror.mephi.ru/ALTLinux p11/branch/noarch classic
+
+#rpm [p11] rsync://mirror.mephi.ru/ALTLinux p11/branch/x86_64 classic gostcrypto
+#rpm [p11] rsync://mirror.mephi.ru/ALTLinux p11/branch/x86_64-i586 classic
+#rpm [p11] rsync://mirror.mephi.ru/ALTLinux p11/branch/noarch classic
+

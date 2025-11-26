@@ -1,0 +1,15 @@
+# mirror.truenetwork.ru (truenetwork)
+
+# ALT Linux Sisyphus
+#rpm [alt] ftp://mirror.truenetwork.ru/altlinux Sisyphus/x86_64 classic
+#rpm [alt] ftp://mirror.truenetwork.ru/altlinux Sisyphus/x86_64-i586 classic
+#rpm [alt] ftp://mirror.truenetwork.ru/altlinux Sisyphus/noarch classic
+
+#rpm [alt] http://mirror.truenetwork.ru/altlinux Sisyphus/x86_64 classic
+#rpm [alt] http://mirror.truenetwork.ru/altlinux Sisyphus/x86_64-i586 classic
+#rpm [alt] http://mirror.truenetwork.ru/altlinux Sisyphus/noarch classic
+
+#rpm [alt] rsync://mirror.truenetwork.ru/altlinux Sisyphus/x86_64 classic
+#rpm [alt] rsync://mirror.truenetwork.ru/altlinux Sisyphus/x86_64-i586 classic
+#rpm [alt] rsync://mirror.truenetwork.ru/altlinux Sisyphus/noarch classic
+

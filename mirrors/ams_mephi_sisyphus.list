@@ -1,0 +1,15 @@
+# mirror.mephi.ru (National Research Nuclear University "MEPhI")
+
+# ALT Linux Sisyphus
+#rpm [alt] ftp://mirror.mephi.ru/ALTLinux Sisyphus/x86_64 classic
+#rpm [alt] ftp://mirror.mephi.ru/ALTLinux Sisyphus/x86_64-i586 classic
+#rpm [alt] ftp://mirror.mephi.ru/ALTLinux Sisyphus/noarch classic
+
+#rpm [alt] http://mirror.mephi.ru/ALTLinux Sisyphus/x86_64 classic
+#rpm [alt] http://mirror.mephi.ru/ALTLinux Sisyphus/x86_64-i586 classic
+#rpm [alt] http://mirror.mephi.ru/ALTLinux Sisyphus/noarch classic
+
+#rpm [alt] rsync://mirror.mephi.ru/ALTLinux Sisyphus/x86_64 classic
+#rpm [alt] rsync://mirror.mephi.ru/ALTLinux Sisyphus/x86_64-i586 classic
+#rpm [alt] rsync://mirror.mephi.ru/ALTLinux Sisyphus/noarch classic
+

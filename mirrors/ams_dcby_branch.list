@@ -1,0 +1,14 @@
+# mirror.datacenter.by (Beltelecom datacenter, Minsk, Belarus)
+
+# ALT Linux Sisyphus
+#rpm [p11] ftp://mirror.datacenter.by/pub/ALTLinux p11/branch/x86_64 classic gostcrypto
+#rpm [p11] ftp://mirror.datacenter.by/pub/ALTLinux p11/branch/x86_64-i586 classic
+#rpm [p11] ftp://mirror.datacenter.by/pub/ALTLinux p11/branch/noarch classic
+
+#rpm [p11] http://mirror.datacenter.by/pub/ALTLinux p11/branch/x86_64 classic gostcrypto
+#rpm [p11] http://mirror.datacenter.by/pub/ALTLinux p11/branch/x86_64-i586 classic
+#rpm [p11] http://mirror.datacenter.by/pub/ALTLinux p11/branch/noarch classic
+
+#rpm [p11] rsync://mirror.datacenter.by/ALTLinux p11/branch/x86_64 classic gostcrypto
+#rpm [p11] rsync://mirror.datacenter.by/ALTLinux p11/branch/x86_64-i586 classic
+#rpm [p11] rsync://mirror.datacenter.by/ALTLinux p11/branch/noarch classic

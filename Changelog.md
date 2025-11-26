@@ -1,5 +1,15 @@
 **Changelog**
 
+**bump version 0.4.4.2 (27.11.2025)**
+
+- added mirror: mirror.truenetwork.ru
+
+**bump version 0.4.4.1 (22.11.2025)**
+
+- added mirror: download.etersoft.ru
+- added mirror: mirror.datacenter.by (p11)
+- added mirror: mirror.mephi.ru
+
 **bump version 0.4.4 (19.11.2025)**
 
 - added mirror: download.basealt.ru
