@@ -1,5 +1,9 @@
 **Changelog**
 
+**bump version 0.4.4.3 (05.12.2025)**
+
+- setFixedSize
+
 **bump version 0.4.4.2 (27.11.2025)**
 
 - added mirror: mirror.truenetwork.ru

@@ -10,6 +10,7 @@ import sys
 import glob
 import locale
 
+from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QPushButton, QHBoxLayout
 from PySide6.QtWidgets import QRadioButton, QLabel, QWidget, QVBoxLayout, QMessageBox, QCheckBox
 from gettext import gettext, bindtextdomain, textdomain
@@ -63,7 +64,7 @@ class Window(QMainWindow):
             sys.exit()
 
         self.setWindowTitle("ALT mirror switcher - "+version)
-        self.resize(200, 50)
+        self.setFixedSize(QSize(400, 300))
 
         #путь до файлов зеркал
         print(gettext("path: ") + path_list)
