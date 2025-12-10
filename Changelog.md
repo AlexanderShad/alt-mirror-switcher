@@ -1,5 +1,9 @@
 **Changelog**
 
+**bump version 0.5.1 (10.12.2025)**
+
+- fix: remove conf file when sources.list choose
+
 **bump version 0.5.0 (09.12.2025)**
 
 - added checking and restoring of additional mirror after package update

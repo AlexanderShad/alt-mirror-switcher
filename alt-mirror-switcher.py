@@ -228,6 +228,8 @@ class Window(QMainWindow):
                 self._lable.setText('<b>' + gettext("No active mirror!") + '<b>')
             enabled_list(source_path, "nil", 0)
             print(gettext("enabled: ") + source_path)
+            if os.path.exists(conf_path):
+                os.remove(conf_path)
             self._msg.setText(gettext("Done!"))
             self._msg.exec()
         elif (self._active.strip() == self._combobox.currentText().strip()) and (self._active_protocol == _protocol):
