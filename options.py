@@ -7,8 +7,37 @@
 #
 
 import os
+import configparser
 
-from constants import source_path
+from PySide6.QtWidgets import QMessageBox
+from gettext import gettext, bindtextdomain, textdomain
+
+from constants import source_path, conf_path, alt_ms, locale_path
+
+def _setup_gettext():
+    try:
+        locale.setlocale(locale.LC_ALL, "")
+    except:
+        pass
+    bindtextdomain(alt_ms, locale_path)
+    textdomain(alt_ms)
+
+def check_active(_active):
+    if os.path.exists(conf_path):
+        _config = configparser.ConfigParser()
+        _config.read(conf_path)
+        if os.path.exists(_config.get('mirror','file')):
+            enabled_list(_config.get('mirror','file'), _config.get('mirror','protocol'), 1)
+            _setup_gettext()
+            _msg = QMessageBox()
+            print(gettext("The active mirror restored!"))
+            _msg.setText(gettext("The active mirror restored!"))
+            _msg.exec()
+            return _config.get('mirror','activ')
+        else:
+            return _active    
+    else:
+        return _active
 
 def check_branch():
     _active_branch = os.popen('rpm --eval %_priority_distbranch').read()

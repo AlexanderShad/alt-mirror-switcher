@@ -6,8 +6,6 @@
 # URL: https://altlinux.space/aleksandershad
 #
 
-version = "0.4.4.3"
-
 alt_ms = "alt-mirror-switcher"
 
 locale_path = "/usr/share/locale"
@@ -15,3 +13,5 @@ locale_path = "/usr/share/locale"
 path_list = "/etc/apt/sources.list.d/"
 
 source_path = "/etc/apt/sources.list"
+
+conf_path = "/usr/share/alt-mirror-switcher/ams.conf"

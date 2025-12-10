@@ -6,17 +6,20 @@
 # URL: https://altlinux.space/aleksandershad
 #
 
+import os
 import sys
 import glob
 import locale
+import configparser
 
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QPushButton, QHBoxLayout
 from PySide6.QtWidgets import QRadioButton, QLabel, QWidget, QVBoxLayout, QMessageBox, QCheckBox
-from gettext import gettext, bindtextdomain, textdomain
+from gettext import gettext
 
-from constants import version, alt_ms, locale_path, path_list, source_path
-from options import disable_source, disable_active, enabled_list, check_branch
+from __init__ import version
+from constants import alt_ms, locale_path, path_list, source_path, conf_path
+from options import disable_source, disable_active, enabled_list, check_branch, check_active, _setup_gettext
 
 
 class Window(QMainWindow):
@@ -43,18 +46,10 @@ class Window(QMainWindow):
             self._checked_flag = True
         self._checkbox_()        
 
-    def _setup_gettext(self):
-        try:
-            locale.setlocale(locale.LC_ALL, "")
-        except:
-            pass
-        bindtextdomain(alt_ms, locale_path)
-        textdomain(alt_ms)
-
     def __init__(self):
         super().__init__()
 
-        self._setup_gettext()
+        _setup_gettext()
 
         self._msg = QMessageBox()
 
@@ -78,6 +73,7 @@ class Window(QMainWindow):
         self._checked_flag = True
 
         _tmp = ''
+        _gui_protocol = ''
 
         self._combobox = QComboBox()
 
@@ -126,15 +122,40 @@ class Window(QMainWindow):
         if self._active != '':
             self._lable = QLabel('<b>' + self._active + '<b>')
         else:
-            self._lable = QLabel('<b>' + gettext("No active mirror!") + '<b>')
+            self._active = check_active(self._active)
+            if self._active != '':
+                self._lable = QLabel('<b>' + self._active + '<b>')
+                _config = configparser.ConfigParser()
+                _config.read(conf_path)
+                self._active_f = _config.get('mirror','file')
+            else:
+                self._lable = QLabel('<b>' + gettext("No active mirror!") + '<b>')
 
         _n2_labele = QLabel(gettext("Protocols:"))
 
+        if self._active_protocol == '':
+            if os.path.exists(conf_path):
+                _config = configparser.ConfigParser()
+                _config.read(conf_path)
+                _gui_protocol = _config.get('mirror','protocol')
+            else:
+                _gui_protocol = 'http:'
+        else:
+            _gui_protocol = self._active_protocol
+
         self._r1_button = QRadioButton('http')
-        self._r1_button.setChecked(True)
         self._r2_button = QRadioButton('ftp')
         self._r3_button = QRadioButton('rsync')
         self._r4_button = QRadioButton('file')
+
+        if _gui_protocol == 'http:':
+            self._r1_button.setChecked(True)
+        if _gui_protocol == 'ftp:':
+            self._r2_button.setChecked(True)
+        if _gui_protocol == 'rsync:':
+            self._r3_button.setChecked(True)
+        if _gui_protocol == 'file:':
+            self._r4_button.setChecked(True)
 
         _n4_labele = QLabel(gettext("Options:"))
 
@@ -249,6 +270,17 @@ class Window(QMainWindow):
             self._active = self._combobox.currentText()
             self._active_f = _new_list
             self._lable.setText('<b>' + self._combobox.currentText() + '<b>')
+
+            #заполнение конфигфайла, нужно для того, что бы отловить активное зеркало
+            #если допустим использовалось дополнительное, не системное, зеркало, так
+            #как оно сбрасывается после обновления пакета
+            _config = configparser.ConfigParser()
+            _config.add_section('mirror')
+            _config.set('mirror', 'activ', self._combobox.currentText())
+            _config.set('mirror', 'file', self._active_f)
+            _config.set('mirror', 'protocol', self._active_protocol)
+            with open(conf_path, 'w') as configfile:
+                _config.write(configfile)
             
             # ремарим /etc/apt/sources.list
             if self._checkbox.isChecked():

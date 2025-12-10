@@ -1,5 +1,10 @@
 **Changelog**
 
+**bump version 0.5.0 (09.12.2025)**
+
+- added checking and restoring of additional mirror after package update
+- added display of the protocol on the active mirror
+
 **bump version 0.4.4.3 (05.12.2025)**
 
 - setFixedSize
