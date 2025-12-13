@@ -1,5 +1,10 @@
 **Changelog**
 
+**bump version 0.6.0 (12.12.2025)**
+
+- added: cli alt-mirror-switcher (ams)
+- fix: minor flaws
+
 **bump version 0.5.1 (10.12.2025)**
 
 - fix: remove conf file when sources.list choose

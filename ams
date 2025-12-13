@@ -1,0 +1,197 @@
+#!/usr/bin/perl
+
+# Name: ALT Mirror Switcher
+# Autor: Aleksandr Shamaraev <shad@altlinux.org>
+# License: GPLv3+
+# URL: https://altlinux.space/aleksandershad
+
+# Inspired by the apt-repo package and uses a small part of its code.
+# Copyright 2011-2023 by Andrey Cherepanov (cas@altlinux.org)
+# Copyright 2015 by Ivan Zakharyaschev (imz@altlinux.org)
+
+use strict;
+use warnings;
+
+my $cmd = '';
+my $conf_list = '/etc/apt/sources.list.d/*.list';
+
+$cmd = $ARGV[0] if scalar @ARGV > 0;
+
+# show local mirrors and switch if ARGV[2] = switch
+sub show_mirror{
+    if (!defined $ARGV[1]){
+        my $dir = $conf_list;
+        $dir =~ s/\*\.list$//;
+        opendir( DIR, $dir );
+        print "Local mirrors:\n";
+        foreach my $name (sort readdir( DIR )) {
+        if( $name =~ /\.list$/)
+            {
+                open(my $fl, "<", $dir . $name);
+                while (my $line = <$fl>) {
+                    if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
+                    $line =~ s/(.*\s+)(http|https|ftp|rsync):\/\///;
+                    $line =~ s/\/.*//;
+                    print $line;                  
+                    last;
+                    }
+                }
+                close($fl);
+            }
+        }
+        closedir( DIR );
+    }
+    elsif ($ARGV[1] eq 'switch'){
+        switch_mirror();
+    }
+    else {
+        show_usage();
+    }
+}
+
+# Switch local mirror
+sub switch_mirror {
+    if (!defined $ARGV[2]) { print "Error: Mirror not specified\n"; return 0; }
+    
+    #definition of an active mirror
+    my $dir;
+    my $active_mirror = '';
+    my $active_protocol = '';
+    my $line2 = '';
+    $dir = $conf_list;
+    $dir =~ s/\*\.list$//;
+    opendir( DIR, $dir );
+    foreach my $name (sort readdir( DIR )) {
+        if( $name =~ /\.list$/)
+        {
+            open(my $fl, "<", $dir . $name);
+            while (my $line = <$fl>) {
+                if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
+                  my $t2 = substr($line, 0, 3);
+                  if ($t2 eq'rpm') {
+                    $active_mirror = $dir . $name; 
+                    if ($line =~ 'http:') {$active_protocol = 'http:';}
+                    if ($line =~ 'https:') {$active_protocol = 'https:';}
+                    if ($line =~ 'ftp:') {$active_protocol = 'ftp:';}
+                    if ($line =~ 'rsync:') {$active_protocol = 'rsync:';}
+                    last;
+                  }
+                }
+            }
+            close($fl);
+        }
+    }
+    closedir( DIR );
+
+    #definition of an active mirror
+    
+    if ( (!defined $ARGV[3]) || (! $ARGV[3] =~ /^(http|https|ftp|rsync):\//) ) { print "Error: Protocol not specified. Set default: http\n"; $line2 = 'http:'; }
+    if ($line2 eq '') {$line2 = $ARGV[3].':';}
+
+    #find new mirror and check protocol
+    my $new_mirror = '';
+    my $flag_protocol = 0;
+    $dir = $conf_list;
+    $dir =~ s/\*\.list$//;
+    opendir( DIR, $dir );
+    foreach my $name (sort readdir( DIR )) {
+        if( $name =~ /\.list$/)
+            {
+                open(my $fl, "<", $dir . $name);
+                while (my $line = <$fl>) {
+                    if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
+                        if (($line =~ $ARGV[2]) && ($new_mirror eq '')) {$new_mirror = $dir . $name;}
+                        if (($line =~ $ARGV[2]) && ($line =~ $line2) && ($new_mirror ne "")) {$flag_protocol = 1; last;}
+                    }
+                }
+                close($fl);
+            }
+    }
+    closedir( DIR );
+
+    if ($new_mirror eq '') {print "Mirror '" . $ARGV[2] . "' not found.\n"; return 0;}
+    if ($flag_protocol==0) {print "Protocol '" . $line2 . "' not found in '" . $ARGV[2] . "'\n"; return 0;}
+    if (($new_mirror eq $active_mirror) && ($active_protocol eq $line2)) {print "The mirror and protocol have already been selected\n"; return 0;}
+
+    opendir( DIR, $dir );
+    rename $active_mirror, $active_mirror . '.tmp' or die "Cannot switch mirror: $!";
+    open(my $fl, "<", $active_mirror . '.tmp');
+    open ACTIVE_MIRROR, '>', $active_mirror or die "Can't create $active_mirror: $!";
+    while (my $line = <$fl>) {
+        my $t2 = substr($line, 0, 3);
+        if ($t2 eq'rpm') {
+            print ACTIVE_MIRROR "#$line";
+        }
+        else {
+            print ACTIVE_MIRROR $line;
+        }
+    }
+    close($fl);
+    close ACTIVE_MIRROR;
+
+    rename $new_mirror, $new_mirror . '.tmp' or die "Cannot switch mirror: $!";
+    open($fl, "<", $new_mirror . '.tmp');
+    open NEW_MIRROR, '>', $new_mirror or die "Can't create $new_mirror: $!";
+    while (my $line = <$fl>) {
+        if ($line =~ $line2){
+            print NEW_MIRROR substr($line, 1);
+        }
+        else {
+            print NEW_MIRROR $line;
+        }
+    }
+    close($fl);
+    close NEW_MIRROR;
+    unlink( $active_mirror . '.tmp' ) if -e $active_mirror . '.tmp';
+    unlink( $new_mirror . '.tmp' ) if -e $new_mirror . '.tmp';
+    closedir( DIR );
+
+    print "Disabled: /etc/apt/sources.list\n";
+    opendir( DIR, "/etc/apt/" );
+    rename '/etc/apt/sources.list', '/etc/apt/sources.list.tmp' or die "Cannot switch mirror: $!";
+    open($fl, "<", '/etc/apt/sources.list.tmp');
+    open ACTIVE_MIRROR, '>', '/etc/apt/sources.list' or die "Can't create /etc/apt/sources.list: $!";
+    while (my $line = <$fl>) {
+        my $t2 = substr($line, 0, 3);
+        if ($t2 eq'rpm') {
+            print ACTIVE_MIRROR "#$line";
+        }
+        else {
+            print ACTIVE_MIRROR $line;
+        }
+    }
+    close($fl);
+    close ACTIVE_MIRROR;
+    unlink( '/etc/apt/sources.list.tmp' ) if -e '/etc/apt/sources.list.tmp';
+    closedir( DIR );
+
+    print "\nDone.\n";
+           
+    return 0;
+}
+
+# Show usage information
+sub show_usage {
+    print <<"HELP";
+Usage: ams mirror [switch <mirror> <http|https|ftp|rsync>]
+
+COMMANDS:
+  mirror [switch <mirror> <http|https|ftp|rsync>] Showing and switching local update mirrors with needs protocols (default: http)
+  -h, --help       Show help and exit
+HELP
+    exit 0;
+}
+
+
+# Exiting functions
+show_usage() if $cmd =~ /-(h|-help)$/ or scalar @ARGV == 0;
+switch_mirror( @ARGV ) if $cmd eq 'switch';
+
+# Functions with return
+if( $cmd =~ /^(mirror)$/ ) {
+    show_mirror( @ARGV ) if $cmd eq 'mirror';
+} else {
+    die "Unknown command `$cmd`.\nRun `ams --help` for supported commands.\n";
+}
+
+__END__

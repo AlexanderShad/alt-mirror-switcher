@@ -160,7 +160,16 @@ class Window(QMainWindow):
         _n4_labele = QLabel(gettext("Options:"))
 
         self._checkbox = QCheckBox(gettext("disable ") + source_path)
-        self._checkbox.setChecked(True)
+        _config = configparser.ConfigParser()
+        _config.read(conf_path)
+        try:
+            if _config.get('options','checkbox') == '1':
+                self._checkbox.setChecked(True)
+            else:
+                self._checkbox.setChecked(False)
+        except:
+            self._checkbox.setChecked(True)
+            pass
         self._checkbox.stateChanged.connect(self._check_enabled)
 
         self._checkbox2 = QCheckBox(gettext("disable system *.list and enable ") + source_path)
@@ -281,6 +290,11 @@ class Window(QMainWindow):
             _config.set('mirror', 'activ', self._combobox.currentText())
             _config.set('mirror', 'file', self._active_f)
             _config.set('mirror', 'protocol', self._active_protocol)
+            _config.add_section('options')
+            if self._checkbox.isChecked():
+                _config.set('options', 'checkbox', '1')
+            else:
+                _config.set('options', 'checkbox', '0')
             with open(conf_path, 'w') as configfile:
                 _config.write(configfile)
             
