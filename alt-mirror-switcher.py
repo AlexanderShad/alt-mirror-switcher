@@ -20,6 +20,7 @@ from gettext import gettext
 from __init__ import version
 from constants import alt_ms, locale_path, path_list, source_path, conf_path
 from options import disable_source, disable_active, enabled_list, check_branch, check_active, _setup_gettext
+from options import check_ams_mirror
 
 
 class Window(QMainWindow):
@@ -53,8 +54,13 @@ class Window(QMainWindow):
 
         self._msg = QMessageBox()
 
-        if check_branch(): # проверка совпадения текущего бранча на системе и пакета зеркал под этот бранч
+        if not check_branch(): # проверка совпадения текущего бранча на системе и пакета зеркал под этот бранч
             self._msg.setText(gettext("A difference in branches was detected. If you are using Sisyphus, <b>install apt-conf-sisyphus</b>."))
+            self._msg.exec()
+            sys.exit()
+
+        if not check_ams_mirror(): # проверка совпадения текущего бранча на системе и фактически выбанного дополнительного листа
+            self._msg.setText(gettext("A branch difference was detected. You are using additional mirrors from a different branch."))
             self._msg.exec()
             sys.exit()
 
@@ -202,6 +208,12 @@ class Window(QMainWindow):
         self.setCentralWidget(_container)
 
     def set_mirror(self):
+
+        if not check_ams_mirror(): # проверка совпадения текущего бранча на системе и фактически выбанного дополнительного листа
+            self._msg.setText(gettext("A branch difference was detected. You are using additional mirrors from a different branch."))
+            self._msg.exec()
+            return
+
         #выбор протокола для установки
         _protocol = ''
         _flag_protocol = 0

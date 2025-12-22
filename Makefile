@@ -14,3 +14,5 @@ install-data:
 
 install-bin:
 	install -Dm755 $(NAME) $(PREFIXBIN)/$(NAME)
+	install -Dm755 ams $(PREFIXBIN)/ams
+	

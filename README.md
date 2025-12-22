@@ -4,6 +4,8 @@ Simple local mirror switcher for ALT.
 
 Written in Python 3 and uses PySide6.
 
+The **ams** CLI utility is written in Perl.
+
 To elevate privileges, use the timeshift-launcher script.
 
 The *.desktop file uses the altlinux system icon.
@@ -17,6 +19,8 @@ ___
 Простой переключатель локальных зеркал для ALT.
 
 Написан на Python 3 и использует PySide6.
+
+Утилита командной строки **ams** написана на языке Perl.
 
 Для повышения привилегий используется скрипт timeshift-launcher.
 

@@ -1,5 +1,10 @@
 **Changelog**
 
+**bump version 0.6.1 (22.12.2025)**
+
+- ams: added: "file" protocol
+- fix: some errors
+
 **bump version 0.6.0 (12.12.2025)**
 
 - added: cli alt-mirror-switcher (ams)

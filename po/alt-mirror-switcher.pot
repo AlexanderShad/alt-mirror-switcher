@@ -1,0 +1,82 @@
+# Name: ALT Mirror Switcher
+# Autor: FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# License: GPLv2+
+msgid ""
+msgstr ""
+"Project-Id-Version: ALT Mirror Switcher\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-16 13:00+1100\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "getting specifically Alt repository lists"
+msgstr ""
+
+msgid "filling in the drop-down list of mirrors and determining the active one"
+msgstr ""
+
+msgid "Set mirror"
+msgstr ""
+
+msgid "Active mirror:"
+msgstr ""
+
+msgid "No active mirror!"
+msgstr ""
+
+msgid "Protocols:"
+msgstr ""
+
+msgid "Options:"
+msgstr ""
+
+msgid "disable "
+msgstr ""
+
+msgid "Mirrors list:"
+msgstr ""
+
+msgid "set default protocol: http"
+msgstr ""
+
+msgid "This mirror and procol has already been selected!"
+msgstr ""
+
+msgid "find: "
+msgstr ""
+
+msgid "No required protocol! Stopped."
+msgstr ""
+
+msgid "setting: "
+msgstr ""
+
+msgid "Done!"
+msgstr ""
+
+msgid "path: "
+msgstr ""
+
+msgid "disabled: "
+msgstr ""
+
+msgid "disable system *.list and enable "
+msgstr ""
+
+msgid "enabled: "
+msgstr ""
+
+msgid "A difference in branches was detected. If you are using Sisyphus, <b>install apt-conf-sisyphus</b>."
+msgstr ""
+
+msgid "The active mirror restored!"
+msgstr ""
+
+msgid "A branch difference was detected. You are using additional mirrors from a different branch."
+msgstr ""

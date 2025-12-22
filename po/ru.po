@@ -1,0 +1,85 @@
+# Name: ALT Mirror Switcher
+# Autor: Aleksandr Shamaraev <shad@altlinux.org>
+# License: GPLv2+
+# URL: https://altlinux.space/aleksandershad
+msgid ""
+msgstr ""
+"Project-Id-Version: ALT Mirror Switcher\n"
+"Report-Msgid-Bugs-To: https://altlinux.space/aleksandershad/alt-mirror-switcher/issuesPOT-Creation-Date: "
+"2025-11-17 13:00+1100\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2025-12-22 14:02+1100\n"
+"Last-Translator: Aleksandr Shamaraev <shad@altlinux.org>\n"
+"Language-Team: \n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+msgid "getting specifically Alt repository lists"
+msgstr "получение списков репозиториев Alt"
+
+msgid "filling in the drop-down list of mirrors and determining the active one"
+msgstr "заполнение выпадающего списка зеркал и определение активного"
+
+msgid "Set mirror"
+msgstr "Установить зеркало"
+
+msgid "Active mirror:"
+msgstr "Активное зеркало:"
+
+msgid "No active mirror!"
+msgstr "Нет активного зеркала!"
+
+msgid "Protocols:"
+msgstr "Протоколы:"
+
+msgid "Options:"
+msgstr "Параметры:"
+
+msgid "disable "
+msgstr "отключить "
+
+msgid "Mirrors list:"
+msgstr "Список зеркал:"
+
+msgid "set default protocol: http"
+msgstr "установить протокол по умолчанию: http"
+
+msgid "This mirror and procol has already been selected!"
+msgstr "Это зеркало и протокол уже выбраны!"
+
+msgid "find: "
+msgstr "найден: "
+
+msgid "No required protocol! Stopped."
+msgstr "Нет требуемого протокола! Остановлено."
+
+msgid "setting: "
+msgstr "установлен: "
+
+msgid "Done!"
+msgstr "Готово!"
+
+msgid "path: "
+msgstr "путь: "
+
+msgid "disabled: "
+msgstr "отключено: "
+
+msgid "disable system *.list and enable "
+msgstr "отключить системный *.list и включить "
+
+msgid "enabled: "
+msgstr "включено: "
+
+msgid "A difference in branches was detected. If you are using Sisyphus, <b>install apt-conf-sisyphus</b>."
+msgstr "Обнаружена разница в бранчах. Если Вы используете Сизиф, <b>установите apt-conf-sisyphus</b>."
+
+msgid "The active mirror restored!"
+msgstr "Активное зеркало восстановлено!"
+
+msgid "A branch difference was detected. You are using additional mirrors from a different branch."
+msgstr "Обнаружено различие в ветках. Вы используете дополнительные зеркала из другой ветки."

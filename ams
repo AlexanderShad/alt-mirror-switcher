@@ -30,7 +30,7 @@ sub show_mirror{
                 open(my $fl, "<", $dir . $name);
                 while (my $line = <$fl>) {
                     if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
-                    $line =~ s/(.*\s+)(http|https|ftp|rsync):\/\///;
+                    $line =~ s/(.*\s+)(http|https|ftp|rsync|file):\/\///;
                     $line =~ s/\/.*//;
                     print $line;                  
                     last;
@@ -74,6 +74,7 @@ sub switch_mirror {
                     if ($line =~ 'https:') {$active_protocol = 'https:';}
                     if ($line =~ 'ftp:') {$active_protocol = 'ftp:';}
                     if ($line =~ 'rsync:') {$active_protocol = 'rsync:';}
+                    if ($line =~ 'file:') {$active_protocol = 'file:';}
                     last;
                   }
                 }
@@ -85,7 +86,7 @@ sub switch_mirror {
 
     #definition of an active mirror
     
-    if ( (!defined $ARGV[3]) || (! $ARGV[3] =~ /^(http|https|ftp|rsync):\//) ) { print "Error: Protocol not specified. Set default: http\n"; $line2 = 'http:'; }
+    if ( (!defined $ARGV[3]) || (! $ARGV[3] =~ /^(http|https|ftp|rsync|file):\//) ) { print "Error: Protocol not specified. Set default: http\n"; $line2 = 'http:'; }
     if ($line2 eq '') {$line2 = $ARGV[3].':';}
 
     #find new mirror and check protocol
@@ -173,10 +174,10 @@ sub switch_mirror {
 # Show usage information
 sub show_usage {
     print <<"HELP";
-Usage: ams mirror [switch <mirror> <http|https|ftp|rsync>]
+Usage: ams mirror [switch <mirror> <http|https|ftp|rsync|file>]
 
 COMMANDS:
-  mirror [switch <mirror> <http|https|ftp|rsync>] Showing and switching local update mirrors with needs protocols (default: http)
+  mirror [switch <mirror> <http|https|ftp|rsync|file>] Showing and switching local update mirrors with needs protocols (default: http)
   -h, --help       Show help and exit
 HELP
     exit 0;
