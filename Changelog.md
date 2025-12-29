@@ -1,5 +1,11 @@
 **Changelog**
 
+**bump version 0.6.2 (29.12.2025)**
+
+- GUI: added: https protocol support.
+- GUI: added: convert http -> https.
+- GUI: fix: minor flaws.
+
 **bump version 0.6.1 (22.12.2025)**
 
 - ams: added: "file" protocol

@@ -13,18 +13,26 @@ import locale
 import configparser
 
 from PySide6.QtCore import QSize
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QPushButton, QHBoxLayout
 from PySide6.QtWidgets import QRadioButton, QLabel, QWidget, QVBoxLayout, QMessageBox, QCheckBox
+from PySide6.QtWidgets import QButtonGroup
 from gettext import gettext
 
 from __init__ import version
-from constants import alt_ms, locale_path, path_list, source_path, conf_path
+from constants import alt_ms, locale_path, path_list, source_path, conf_path, ams_path
 from options import disable_source, disable_active, enabled_list, check_branch, check_active, _setup_gettext
-from options import check_ams_mirror
+from options import check_ams_mirror, del_ams_path, check_protocol
 
 
 class Window(QMainWindow):
     
+    def _change_rb(self):
+        if self._r5_button.isChecked():
+            self._checkbox3.setEnabled(True)
+        else:
+            self._checkbox3.setEnabled(False)
+
     def _checkbox_(self):
         if self._checkbox2.isChecked():
             self._button.setText(gettext("disable system *.list and enable ") + source_path)
@@ -65,6 +73,7 @@ class Window(QMainWindow):
             sys.exit()
 
         self.setWindowTitle("ALT mirror switcher - "+version)
+        self.setWindowIcon(QIcon("/usr/share/icons/hicolor/32x32/apps/altlinux.png"))
         self.setFixedSize(QSize(400, 300))
 
         #путь до файлов зеркал
@@ -109,6 +118,8 @@ class Window(QMainWindow):
                         self._active_f = _t
                         if 'http:' in _s:
                             self._active_protocol = 'http:'
+                        if 'https:' in _s:
+                            self._active_protocol = 'https:'
                         if 'ftp:' in _s:
                             self._active_protocol = 'ftp:'
                         if 'rsync:' in _s:
@@ -153,6 +164,14 @@ class Window(QMainWindow):
         self._r2_button = QRadioButton('ftp')
         self._r3_button = QRadioButton('rsync')
         self._r4_button = QRadioButton('file')
+        self._r5_button = QRadioButton('https')
+
+        self._rb_group = QButtonGroup()
+        self._rb_group.addButton(self._r1_button)
+        self._rb_group.addButton(self._r2_button)
+        self._rb_group.addButton(self._r3_button)
+        self._rb_group.addButton(self._r4_button)
+        self._rb_group.addButton(self._r5_button)
 
         if _gui_protocol == 'http:':
             self._r1_button.setChecked(True)
@@ -182,7 +201,17 @@ class Window(QMainWindow):
         self._checkbox2.setChecked(False)
         self._checkbox2.stateChanged.connect(self._check_disabled)
 
+        self._checkbox3 = QCheckBox(gettext("convert http -> https if https not found"))
+        if _gui_protocol == 'https:':
+            self._r5_button.setChecked(True)
+            self._checkbox3.setEnabled(True)
+            self._checkbox3.setChecked(True)
+        else:
+            self._checkbox3.setEnabled(False)
+            self._checkbox3.setChecked(False)
       
+        self._rb_group.buttonClicked.connect(self._change_rb)
+
         _n3_labele = QLabel(gettext("Mirrors list:"))
 
         _layout = QVBoxLayout()
@@ -191,6 +220,7 @@ class Window(QMainWindow):
         _layout.addWidget(self._lable)
         _layout.addWidget(_n2_labele)
         _layout2.addWidget(self._r1_button)
+        _layout2.addWidget(self._r5_button)
         _layout2.addWidget(self._r2_button)
         _layout2.addWidget(self._r3_button)
         _layout2.addWidget(self._r4_button)
@@ -198,6 +228,7 @@ class Window(QMainWindow):
         _layout.addWidget(_n4_labele)
         _layout.addWidget(self._checkbox)
         _layout.addWidget(self._checkbox2)
+        _layout.addWidget(self._checkbox3)
         _layout.addWidget(_n3_labele)
         _layout.addWidget(self._combobox)
         _layout.addWidget(self._button)
@@ -233,6 +264,10 @@ class Window(QMainWindow):
         if self._r4_button.isChecked():
             _protocol = 'file:'
             _flag_protocol = 1
+        
+        if self._r5_button.isChecked():
+            _protocol = 'https:'
+            _flag_protocol = 1
 
         if _flag_protocol == 0:
             print (gettext("set default protocol: http"))
@@ -251,13 +286,14 @@ class Window(QMainWindow):
             print(gettext("enabled: ") + source_path)
             if os.path.exists(conf_path):
                 os.remove(conf_path)
+            del_ams_path()
             self._msg.setText(gettext("Done!"))
             self._msg.exec()
         elif (self._active.strip() == self._combobox.currentText().strip()) and (self._active_protocol == _protocol):
             self._msg.setText(gettext("This mirror and procol has already been selected!"))
             self._msg.exec()
         else:
-            #ищем новое зеркало
+            #ищем новое зеркало, если верхний блок пропущен
             _new_list = ''
 
             for _t in self._list:        
@@ -268,13 +304,58 @@ class Window(QMainWindow):
                             _new_list = _t
                             break
 
+            #---------------------------------------------
+            # проверяем включена ли конвертация http -> https и если да, то работаем по ней и выходим
+            if (self._checkbox3.isEnabled() and self._checkbox3.isChecked()):
+                __flag = check_protocol(_new_list,"http:",0)          
+                if __flag != 1:
+                    self._msg.setText(gettext("No required protocol! Stopped."))
+                    self._msg.exec()
+                    return
+                if ((self._active != '') and (self._active != ams_path)):
+                    disable_active(self._active_f)
+                    print(gettext("disabled: ") + self._active_f)
+                #переносим в https
+                _tmp_f = ams_path
+                _del_temp_list = 0
+                if _new_list == ams_path:
+                    os.rename(_new_list,_new_list+'.tmp')
+                    _new_list=_new_list+'.tmp'
+                    _del_temp_list = 1
+                else:
+                    del_ams_path()
+                with open(_new_list, 'r') as _old_f, open(_tmp_f, 'w') as _new_f:
+                    for _s in _old_f:
+                        if "http:" in _s:
+                            _new_f.write((_s.strip().replace("#", "", 1)).replace("http:","https:")+'\n')
+                if _del_temp_list == 1:
+                    os.remove(_new_list)
+                self._active_protocol = "https:"
+                self._active = self._combobox.currentText()
+                self._active_f = ams_path
+                self._lable.setText('<b>' + self._combobox.currentText() + '<b>')
+                _config = configparser.ConfigParser()
+                _config.add_section('mirror')
+                _config.set('mirror', 'activ', self._combobox.currentText())
+                _config.set('mirror', 'file', self._active_f)
+                _config.set('mirror', 'protocol', self._active_protocol)
+                _config.add_section('options')
+                if self._checkbox.isChecked():
+                    _config.set('options', 'checkbox', '1')
+                else:
+                    _config.set('options', 'checkbox', '0')
+                with open(conf_path, 'w') as configfile:
+                    _config.write(configfile)
+                if self._checkbox.isChecked():
+                    disable_source()
+                    print(gettext("disabled: ") + source_path)
+                self._msg.setText(gettext("Done!"))
+                self._msg.exec()
+                return
+            #---------------------------------------------
+
             # проверка на наличие протокола
-            __flag = 0
-            with open(_new_list, 'r') as __f:
-                for _s in __f:
-                    if _protocol in _s:
-                        __flag = 1
-                        break
+            __flag = check_protocol(_new_list,_protocol,0)          
             if __flag != 1:
                 self._msg.setText(gettext("No required protocol! Stopped."))
                 self._msg.exec()
@@ -315,6 +396,7 @@ class Window(QMainWindow):
                 disable_source()
                 print(gettext("disabled: ") + source_path)
 
+            del_ams_path()
             self._msg.setText(gettext("Done!"))
             self._msg.exec()
 

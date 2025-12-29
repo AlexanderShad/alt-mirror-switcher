@@ -13,7 +13,19 @@ import configparser
 from PySide6.QtWidgets import QMessageBox
 from gettext import gettext, bindtextdomain, textdomain
 
-from constants import source_path, conf_path, alt_ms, locale_path, path_list
+from constants import source_path, conf_path, alt_ms, locale_path, path_list, ams_path
+
+def check_protocol(_new_list,_protocol,__flag):
+    with open(_new_list, 'r') as __f:
+        for _s in __f:
+            if _protocol in _s:
+                __flag = 1
+                break
+    return __flag
+
+def del_ams_path():
+    if os.path.exists(ams_path):
+        os.remove(ams_path)
 
 def _setup_gettext():
     try:
@@ -77,7 +89,7 @@ def check_ams_mirror():
         else:
             return False
     elif "ams" in _active_list:
-        if _active_branch in _active_list:
+        if ((_active_branch in _active_list) or (_active_list == ams_path)):
             return True
         elif ("branch" in _active_list) and ("p1" in _active_branch):
             return True
@@ -112,7 +124,6 @@ def enabled_list(_new_list, _protocol, x): #x - если это 1 то учит�
                 else:
                     _new_f.write(_s)
     os.remove(_tmp_f)
-
 
 def disable_active(_active_f):
     _tmp_f = _active_f+'.tmp'

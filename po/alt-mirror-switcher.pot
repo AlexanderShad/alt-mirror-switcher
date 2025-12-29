@@ -80,3 +80,6 @@ msgstr ""
 
 msgid "A branch difference was detected. You are using additional mirrors from a different branch."
 msgstr ""
+
+msgid "convert http -> https if https not found"
+msgstr "конвертировать http -> https если https не найден"
