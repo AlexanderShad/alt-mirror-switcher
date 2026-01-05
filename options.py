@@ -15,6 +15,15 @@ from gettext import gettext, bindtextdomain, textdomain
 
 from constants import source_path, conf_path, alt_ms, locale_path, path_list, ams_path
 
+def check_arch(_new_list):
+    _arch = os.popen('uname -m').read().strip()
+    with open(_new_list,'r') as _f:
+        _file_content = _f.read().strip()
+        if _arch in _file_content:
+            return True
+        else:
+            return False
+
 def check_protocol(_new_list,_protocol,__flag):
     with open(_new_list, 'r') as __f:
         for _s in __f:
@@ -53,6 +62,7 @@ def check_active(_active):
         return _active
 
 def check_ams_mirror():
+
     _active_branch = os.popen('rpm --eval %_priority_distbranch').read().strip()
     _ams_mirror = os.popen('rpm -qa | grep switcher-lists-').read().strip()
     _active_list = ''
@@ -88,15 +98,31 @@ def check_ams_mirror():
             return True
         else:
             return False
-    elif "ams" in _active_list:
-        if ((_active_branch in _active_list) or (_active_list == ams_path)):
-            return True
-        elif ("branch" in _active_list) and ("p1" in _active_branch):
+    elif _active_list == ams_path:
+        if _ams_check(_active_branch,_ams_mirror):
             return True
         else:
             return False
-    else:
+    elif "ams" in _active_list:
+        if _ams_check(_active_branch,_active_list):
+            return True
+        else:
+            return False
+    elif _active_list != '':
+        if _active_branch in _ams_mirror:
+            return True
+        elif ("branch" in _ams_mirror) and ("p1" in _active_branch):
+            return True
+        else:
+            return False
+
+def _ams_check(_active_branch,_active_list):
+    if _active_branch in _active_list:
         return True
+    elif ("branch" in _active_list) and ("p1" in _active_branch):
+        return True
+    else:
+        return False
 
 def check_branch():
     _active_branch = os.popen('rpm --eval %_priority_distbranch').read().strip()

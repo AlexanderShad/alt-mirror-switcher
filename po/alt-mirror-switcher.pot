@@ -82,4 +82,7 @@ msgid "A branch difference was detected. You are using additional mirrors from a
 msgstr ""
 
 msgid "convert http -> https if https not found"
-msgstr "конвертировать http -> https если https не найден"
+msgstr ""
+
+msgid "This mirror does not contain the required architecture."
+msgstr ""

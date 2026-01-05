@@ -11,6 +11,7 @@
 
 use strict;
 use warnings;
+use String::Util 'trim';
 
 my $cmd = '';
 my $conf_list = '/etc/apt/sources.list.d/*.list';
@@ -110,25 +111,39 @@ sub switch_mirror {
     }
     closedir( DIR );
 
+    # ------ block with different checks
     if ($new_mirror eq '') {print "Mirror '" . $ARGV[2] . "' not found.\n"; return 0;}
     if ($flag_protocol==0) {print "Protocol '" . $line2 . "' not found in '" . $ARGV[2] . "'\n"; return 0;}
-    if (($new_mirror eq $active_mirror) && ($active_protocol eq $line2)) {print "The mirror and protocol have already been selected\n"; return 0;}
-
+    if (($new_mirror eq $active_mirror) && ($active_protocol eq $line2)) {print "The mirror and protocol have already been selected\n"; return 0;}  
+    # check branch
+    my $act_branch = trim(`rpm --eval %_priority_distbranch`);
+    my $act_mirror = trim(`rpm -qa | grep apt-conf-`);
+    my $check_brach;
+    if ($act_mirror =~ $act_branch) {$check_brach = 1;}
+    elsif (($act_branch =~ /p1/) && ($act_mirror =~ /branch/)) {$check_brach = 1;}
+    else {$check_brach = 0;}
+    if ($check_brach==0) {print "A difference in branches was detected. If you are using Sisyphus, install apt-conf-sisyphus.\n"; return 0;}
+    # ------
+    
+    my $fl;
     opendir( DIR, $dir );
-    rename $active_mirror, $active_mirror . '.tmp' or die "Cannot switch mirror: $!";
-    open(my $fl, "<", $active_mirror . '.tmp');
-    open ACTIVE_MIRROR, '>', $active_mirror or die "Can't create $active_mirror: $!";
-    while (my $line = <$fl>) {
-        my $t2 = substr($line, 0, 3);
-        if ($t2 eq'rpm') {
-            print ACTIVE_MIRROR "#$line";
+
+    if ($active_mirror ne '') {
+        rename $active_mirror, $active_mirror . '.tmp' or die "Cannot switch mirror: $!";
+        open($fl, "<", $active_mirror . '.tmp');
+        open ACTIVE_MIRROR, '>', $active_mirror or die "Can't create $active_mirror: $!";
+        while (my $line = <$fl>) {
+            my $t2 = substr($line, 0, 3);
+            if ($t2 eq'rpm') {
+                print ACTIVE_MIRROR "#$line";
+            }
+            else {
+                print ACTIVE_MIRROR $line;
+            }
         }
-        else {
-            print ACTIVE_MIRROR $line;
-        }
+        close($fl);
+        close ACTIVE_MIRROR;
     }
-    close($fl);
-    close ACTIVE_MIRROR;
 
     rename $new_mirror, $new_mirror . '.tmp' or die "Cannot switch mirror: $!";
     open($fl, "<", $new_mirror . '.tmp');

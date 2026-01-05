@@ -1,5 +1,12 @@
 **Changelog**
 
+**bump version 0.6.3 (05.01.2026)**
+
+- GUI: fix: some errors
+- GUI: add: architecture check
+- CLI: fix: switch with no active mirror
+- CLI: add: check branch
+
 **bump version 0.6.2 (29.12.2025)**
 
 - GUI: added: https protocol support.

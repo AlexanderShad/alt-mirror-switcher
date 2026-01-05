@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://altlinux.space/aleksandershad/alt-mirror-switcher/issues"
 "POT-Creation-Date: 2025-11-17 13:00+1100\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-12-29 14:16+1100\n"
+"PO-Revision-Date: 2026-01-05 15:09+1100\n"
 "Last-Translator: Aleksandr Shamaraev <shad@altlinux.org>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -86,3 +86,6 @@ msgstr "Обнаружено различие в ветках. Вы исполь
 
 msgid "convert http -> https if https not found"
 msgstr "конвертировать http -> https если https не найден"
+
+msgid "This mirror does not contain the required architecture."
+msgstr "Данное зеркало не содержит необходимой архитектуры."

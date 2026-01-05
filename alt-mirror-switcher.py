@@ -22,7 +22,7 @@ from gettext import gettext
 from __init__ import version
 from constants import alt_ms, locale_path, path_list, source_path, conf_path, ams_path
 from options import disable_source, disable_active, enabled_list, check_branch, check_active, _setup_gettext
-from options import check_ams_mirror, del_ams_path, check_protocol
+from options import check_ams_mirror, del_ams_path, check_protocol, check_arch
 
 
 class Window(QMainWindow):
@@ -240,11 +240,6 @@ class Window(QMainWindow):
 
     def set_mirror(self):
 
-        if not check_ams_mirror(): # проверка совпадения текущего бранча на системе и фактически выбанного дополнительного листа
-            self._msg.setText(gettext("A branch difference was detected. You are using additional mirrors from a different branch."))
-            self._msg.exec()
-            return
-
         #выбор протокола для установки
         _protocol = ''
         _flag_protocol = 0
@@ -303,6 +298,12 @@ class Window(QMainWindow):
                             print(gettext("find: ") + _t)
                             _new_list = _t
                             break
+            
+            # -- в этом месте все проверки до переключения 
+            if not check_arch(_new_list):
+                self._msg.setText(gettext("This mirror does not contain the required architecture."))
+                self._msg.exec()
+                sys.exit()
 
             #---------------------------------------------
             # проверяем включена ли конвертация http -> https и если да, то работаем по ней и выходим
