@@ -303,7 +303,7 @@ class Window(QMainWindow):
             if not check_arch(_new_list):
                 self._msg.setText(gettext("This mirror does not contain the required architecture."))
                 self._msg.exec()
-                sys.exit()
+                return
 
             #---------------------------------------------
             # проверяем включена ли конвертация http -> https и если да, то работаем по ней и выходим

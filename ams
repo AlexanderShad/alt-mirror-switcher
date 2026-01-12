@@ -15,6 +15,7 @@ use String::Util 'trim';
 
 my $cmd = '';
 my $conf_list = '/etc/apt/sources.list.d/*.list';
+my $ams_path = "/etc/apt/sources.list.d/ams.list";
 
 $cmd = $ARGV[0] if scalar @ARGV > 0;
 
@@ -28,16 +29,19 @@ sub show_mirror{
         foreach my $name (sort readdir( DIR )) {
         if( $name =~ /\.list$/)
             {
-                open(my $fl, "<", $dir . $name);
-                while (my $line = <$fl>) {
-                    if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
-                    $line =~ s/(.*\s+)(http|https|ftp|rsync|file):\/\///;
-                    $line =~ s/\/.*//;
-                    print $line;                  
-                    last;
+                if (trim($dir . $name) ne trim($ams_path))
+                {
+                    open(my $fl, "<", $dir . $name);
+                    while (my $line = <$fl>) {
+                        if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
+                        $line =~ s/(.*\s+)(http|https|ftp|rsync|file):\/\///;
+                        $line =~ s/\/.*//;
+                        print $line;                  
+                        last;
+                        }
                     }
+                    close($fl);
                 }
-                close($fl);
             }
         }
         closedir( DIR );
@@ -65,22 +69,25 @@ sub switch_mirror {
     foreach my $name (sort readdir( DIR )) {
         if( $name =~ /\.list$/)
         {
-            open(my $fl, "<", $dir . $name);
-            while (my $line = <$fl>) {
-                if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
-                  my $t2 = substr($line, 0, 3);
-                  if ($t2 eq'rpm') {
-                    $active_mirror = $dir . $name; 
-                    if ($line =~ 'http:') {$active_protocol = 'http:';}
-                    if ($line =~ 'https:') {$active_protocol = 'https:';}
-                    if ($line =~ 'ftp:') {$active_protocol = 'ftp:';}
-                    if ($line =~ 'rsync:') {$active_protocol = 'rsync:';}
-                    if ($line =~ 'file:') {$active_protocol = 'file:';}
-                    last;
-                  }
+            if (trim($dir . $name) ne trim($ams_path))
+            {
+                open(my $fl, "<", $dir . $name);
+                while (my $line = <$fl>) {
+                    if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
+                    my $t2 = substr($line, 0, 3);
+                    if ($t2 eq'rpm') {
+                        $active_mirror = $dir . $name; 
+                        if ($line =~ 'http:') {$active_protocol = 'http:';}
+                        if ($line =~ 'https:') {$active_protocol = 'https:';}
+                        if ($line =~ 'ftp:') {$active_protocol = 'ftp:';}
+                        if ($line =~ 'rsync:') {$active_protocol = 'rsync:';}
+                        if ($line =~ 'file:') {$active_protocol = 'file:';}
+                        last;
+                    }
+                    }
                 }
+                close($fl);
             }
-            close($fl);
         }
     }
     closedir( DIR );
@@ -99,14 +106,17 @@ sub switch_mirror {
     foreach my $name (sort readdir( DIR )) {
         if( $name =~ /\.list$/)
             {
-                open(my $fl, "<", $dir . $name);
-                while (my $line = <$fl>) {
-                    if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
-                        if (($line =~ $ARGV[2]) && ($new_mirror eq '')) {$new_mirror = $dir . $name;}
-                        if (($line =~ $ARGV[2]) && ($line =~ $line2) && ($new_mirror ne "")) {$flag_protocol = 1; last;}
+                if (trim($dir . $name) ne trim($ams_path))
+                {
+                    open(my $fl, "<", $dir . $name);
+                    while (my $line = <$fl>) {
+                        if (($line =~ /\[p1/) or ($line =~ /\[alt\]/)) {
+                            if (($line =~ $ARGV[2]) && ($new_mirror eq '')) {$new_mirror = $dir . $name;}
+                            if (($line =~ $ARGV[2]) && ($line =~ $line2) && ($new_mirror ne "")) {$flag_protocol = 1; last;}
+                        }
                     }
+                    close($fl);
                 }
-                close($fl);
             }
     }
     closedir( DIR );
@@ -123,6 +133,22 @@ sub switch_mirror {
     elsif (($act_branch =~ /p1/) && ($act_mirror =~ /branch/)) {$check_brach = 1;}
     else {$check_brach = 0;}
     if ($check_brach==0) {print "A difference in branches was detected. If you are using Sisyphus, install apt-conf-sisyphus.\n"; return 0;}
+    # check arch
+    my $arch = trim(`uname -m`);
+    open(ARCH,$new_mirror);
+    my @lines = <ARCH>;
+    close ARCH;
+    my $check_arch = 0;
+    foreach my $arch_line (@lines) { if ($arch_line =~ $arch) {$check_arch = 1; last;} }
+    if ($check_arch==0) {print "This mirror (" . $ARGV[2] . ") does not contain the required architecture.\n"; return 0;}
+    # check ams lists
+    my $ams_list_package = trim(`rpm -qa | grep switcher-lists-`);
+    my $check_ams_list;
+    if ($ams_list_package eq '') {$check_ams_list = 1;}
+    elsif ($ams_list_package =~ $act_branch) {$check_ams_list = 1;}
+    elsif (($act_branch =~ /p1/) && ($ams_list_package =~ /branch/)) {$check_ams_list = 1;}
+    else {$check_ams_list = 0;}
+    if ($check_ams_list==0) {print "A branch difference was detected. You are using additional mirrors from a different branch.\n"; return 0;}
     # ------
     
     my $fl;
@@ -160,6 +186,7 @@ sub switch_mirror {
     close NEW_MIRROR;
     unlink( $active_mirror . '.tmp' ) if -e $active_mirror . '.tmp';
     unlink( $new_mirror . '.tmp' ) if -e $new_mirror . '.tmp';
+    unlink( $ams_path ) if -e $ams_path;
     closedir( DIR );
 
     print "Disabled: /etc/apt/sources.list\n";

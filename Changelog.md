@@ -1,5 +1,12 @@
 **Changelog**
 
+**bump version 0.6.4 (13.01.2026)**
+
+- GUI: fix: don't closing the application if there is no architecture.
+- CLI: fix: some errors.
+- CLI: add: architecture check.
+- CLI: add: ams list check.
+
 **bump version 0.6.3 (05.01.2026)**
 
 - GUI: fix: some errors
