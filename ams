@@ -16,6 +16,7 @@ use String::Util 'trim';
 my $cmd = '';
 my $conf_list = '/etc/apt/sources.list.d/*.list';
 my $ams_path = "/etc/apt/sources.list.d/ams.list";
+my $exclude_list = "/etc/apt/sources.list.d/heanet.list";
 
 $cmd = $ARGV[0] if scalar @ARGV > 0;
 
@@ -29,7 +30,7 @@ sub show_mirror{
         foreach my $name (sort readdir( DIR )) {
         if( $name =~ /\.list$/)
             {
-                if (trim($dir . $name) ne trim($ams_path))
+                if ((trim($dir . $name) ne trim($ams_path)) && (trim($dir . $name) ne trim($exclude_list)))
                 {
                     open(my $fl, "<", $dir . $name);
                     while (my $line = <$fl>) {
@@ -69,7 +70,7 @@ sub switch_mirror {
     foreach my $name (sort readdir( DIR )) {
         if( $name =~ /\.list$/)
         {
-            if (trim($dir . $name) ne trim($ams_path))
+            if ((trim($dir . $name) ne trim($ams_path)) && (trim($dir . $name) ne trim($exclude_list)))
             {
                 open(my $fl, "<", $dir . $name);
                 while (my $line = <$fl>) {
@@ -106,7 +107,7 @@ sub switch_mirror {
     foreach my $name (sort readdir( DIR )) {
         if( $name =~ /\.list$/)
             {
-                if (trim($dir . $name) ne trim($ams_path))
+                if ((trim($dir . $name) ne trim($ams_path)) && (trim($dir . $name) ne trim($exclude_list)))
                 {
                     open(my $fl, "<", $dir . $name);
                     while (my $line = <$fl>) {

@@ -1,5 +1,9 @@
 **Changelog**
 
+**bump version 0.6.5 (17.01.2026)**
+
+- excluded: ftp.heanet.ie (HEAnet, Ireland)
+
 **bump version 0.6.4 (13.01.2026)**
 
 - GUI: fix: don't closing the application if there is no architecture.

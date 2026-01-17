@@ -17,3 +17,5 @@ source_path = "/etc/apt/sources.list"
 conf_path = "/usr/share/alt-mirror-switcher/ams.conf"
 
 ams_path = "/etc/apt/sources.list.d/ams.list"
+
+exclude_list = "/etc/apt/sources.list.d/heanet.list"

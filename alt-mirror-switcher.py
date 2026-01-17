@@ -20,7 +20,7 @@ from PySide6.QtWidgets import QButtonGroup
 from gettext import gettext
 
 from __init__ import version
-from constants import alt_ms, locale_path, path_list, source_path, conf_path, ams_path
+from constants import alt_ms, locale_path, path_list, source_path, conf_path, ams_path, exclude_list
 from options import disable_source, disable_active, enabled_list, check_branch, check_active, _setup_gettext
 from options import check_ams_mirror, del_ams_path, check_protocol, check_arch
 
@@ -95,14 +95,15 @@ class Window(QMainWindow):
         #получение именно альтовских списков репозитория
         print(gettext("getting specifically Alt repository lists"))
         for _file in glob.glob(glob.escape(path_list) + "/*.list"):
-            with open(_file,'r') as file:
-                for _s in file:
-                    if '[alt]' in _s:
-                        self._list.append(_file)
-                        break
-                    if '[p1' in _s:
-                        self._list.append(_file)
-                        break
+            if _file != exclude_list:
+                with open(_file,'r') as file:
+                    for _s in file:
+                        if '[alt]' in _s:
+                            self._list.append(_file)
+                            break
+                        if '[p1' in _s:
+                            self._list.append(_file)
+                            break
 
         #заполнение выпадающего списка зеркал и опредление активного
         print(gettext("filling in the drop-down list of mirrors and determining the active one"))
