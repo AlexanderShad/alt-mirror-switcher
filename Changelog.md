@@ -1,5 +1,10 @@
 **Changelog**
 
+**bump version 0.6.6 (24.01.2026)**
+
+- cli: fixed: check branch
+- cli: fixed: check ams lists
+
 **bump version 0.6.5 (17.01.2026)**
 
 - excluded: ftp.heanet.ie (HEAnet, Ireland)

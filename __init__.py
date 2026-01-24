@@ -6,4 +6,4 @@
 # URL: https://altlinux.space/aleksandershad
 #
 
-version = "0.6.5"
+version = "0.6.6"

@@ -128,8 +128,8 @@ sub switch_mirror {
     if (($new_mirror eq $active_mirror) && ($active_protocol eq $line2)) {print "The mirror and protocol have already been selected\n"; return 0;}  
     # check branch
     my $act_branch = trim(`rpm --eval %_priority_distbranch`);
-    my $act_mirror = trim(`rpm -qa | grep apt-conf-`);
-    my $check_brach;
+    my $act_mirror = `rpm -qa | grep apt-conf-`;
+    my $check_brach = 0;
     if ($act_mirror =~ $act_branch) {$check_brach = 1;}
     elsif (($act_branch =~ /p1/) && ($act_mirror =~ /branch/)) {$check_brach = 1;}
     else {$check_brach = 0;}
@@ -145,7 +145,7 @@ sub switch_mirror {
     # check ams lists
     my $ams_list_package = trim(`rpm -qa | grep switcher-lists-`);
     my $check_ams_list;
-    if ($ams_list_package eq '') {$check_ams_list = 1;}
+    if (!defined $ams_list_package) {$check_ams_list = 1;}
     elsif ($ams_list_package =~ $act_branch) {$check_ams_list = 1;}
     elsif (($act_branch =~ /p1/) && ($ams_list_package =~ /branch/)) {$check_ams_list = 1;}
     else {$check_ams_list = 0;}
