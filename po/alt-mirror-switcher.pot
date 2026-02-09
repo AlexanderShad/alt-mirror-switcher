@@ -86,3 +86,9 @@ msgstr ""
 
 msgid "This mirror does not contain the required architecture."
 msgstr ""
+
+msgid "set the date of the archive 'Sisyphus'"
+msgstr ""
+
+msgid "The specified date is greater than the current date!"
+msgstr ""

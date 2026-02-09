@@ -12,21 +12,48 @@ import glob
 import locale
 import configparser
 
-from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
+from PySide6.QtCore import QSize, QDate
 from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QPushButton, QHBoxLayout
 from PySide6.QtWidgets import QRadioButton, QLabel, QWidget, QVBoxLayout, QMessageBox, QCheckBox
-from PySide6.QtWidgets import QButtonGroup
+from PySide6.QtWidgets import QButtonGroup, QDateEdit
 from gettext import gettext
 
 from __init__ import version
-from constants import alt_ms, locale_path, path_list, source_path, conf_path, ams_path, exclude_list
+from constants import alt_ms, locale_path, path_list, source_path, conf_path
+from constants import ams_path, exclude_list, archive_link, archive_end
 from options import disable_source, disable_active, enabled_list, check_branch, check_active, _setup_gettext
 from options import check_ams_mirror, del_ams_path, check_protocol, check_arch
 
 
 class Window(QMainWindow):
     
+    def _archive_sisyphus(self):
+        if self._checkbox4.isChecked():
+            self._r1_button.setEnabled(False)
+            self._r2_button.setEnabled(False)
+            self._r3_button.setEnabled(False)
+            self._r4_button.setEnabled(False)
+            self._r5_button.setEnabled(False)
+            self._checkbox.setEnabled(False)
+            self._checkbox2.setEnabled(False)
+            self._checkbox3.setEnabled(False)
+            self._combobox.setEnabled(False)
+            self._date.setVisible(True)
+            self._button.setText(gettext("set the date of the archive 'Sisyphus'"))
+        else:
+            self._r1_button.setEnabled(True)
+            self._r2_button.setEnabled(True)
+            self._r3_button.setEnabled(True)
+            self._r4_button.setEnabled(True)
+            self._r5_button.setEnabled(True)
+            self._checkbox.setEnabled(True)
+            self._checkbox2.setEnabled(True)
+            self._checkbox3.setEnabled(True)
+            self._combobox.setEnabled(True)
+            self._date.setVisible(False)
+            self._button.setText(gettext("Set mirror"))
+
     def _change_rb(self):
         if self._r5_button.isChecked():
             self._checkbox3.setEnabled(True)
@@ -37,7 +64,7 @@ class Window(QMainWindow):
         if self._checkbox2.isChecked():
             self._button.setText(gettext("disable system *.list and enable ") + source_path)
         else:
-            self._button.setText(gettext("Set mirror"))            
+            self._button.setText(gettext("Set mirror"))
 
     def _check_enabled(self):
         if self._checkbox2.isChecked() and self._checked_flag:
@@ -210,6 +237,37 @@ class Window(QMainWindow):
         else:
             self._checkbox3.setEnabled(False)
             self._checkbox3.setChecked(False)
+
+        self._checkbox4 = QCheckBox(gettext("set the date of the archive 'Sisyphus'"))
+        self._date = QDateEdit(QDate.currentDate())
+        self._date.setVisible(False)
+
+        __branch = os.popen('rpm --eval %_priority_distbranch').read().strip()
+        if __branch != 'sisyphus':
+            self._checkbox4.setEnabled(False)
+            self._checkbox4.setChecked(False)
+        else:
+            self._checkbox4.setEnabled(True)
+            _config = configparser.ConfigParser()
+            _config.read(conf_path)
+            try:
+                if _config.get('options','archive') == '1':
+                    self._checkbox4.setChecked(True)
+                    self._r1_button.setEnabled(False)
+                    self._r2_button.setEnabled(False)
+                    self._r3_button.setEnabled(False)
+                    self._r4_button.setEnabled(False)
+                    self._r5_button.setEnabled(False)
+                    self._checkbox.setEnabled(False)
+                    self._checkbox2.setEnabled(False)
+                    self._checkbox3.setEnabled(False)
+                    self._combobox.setEnabled(False)
+                    self._date.setVisible(True)
+                    self._button.setText(gettext("set the date of the archive 'Sisyphus'"))
+            except:
+                pass
+
+        self._checkbox4.stateChanged.connect(self._archive_sisyphus)
       
         self._rb_group.buttonClicked.connect(self._change_rb)
 
@@ -217,6 +275,7 @@ class Window(QMainWindow):
 
         _layout = QVBoxLayout()
         _layout2 = QHBoxLayout()
+        _layout3 = QHBoxLayout()
         _layout.addWidget(_n_labele)
         _layout.addWidget(self._lable)
         _layout.addWidget(_n2_labele)
@@ -230,6 +289,9 @@ class Window(QMainWindow):
         _layout.addWidget(self._checkbox)
         _layout.addWidget(self._checkbox2)
         _layout.addWidget(self._checkbox3)
+        _layout3.addWidget(self._checkbox4)
+        _layout3.addWidget(self._date)
+        _layout.addLayout(_layout3)
         _layout.addWidget(_n3_labele)
         _layout.addWidget(self._combobox)
         _layout.addWidget(self._button)
@@ -240,6 +302,50 @@ class Window(QMainWindow):
         self.setCentralWidget(_container)
 
     def set_mirror(self):
+
+        #переключение Сизиф на дату, если включено
+        if self._checkbox4.isChecked():
+            if self._date.date() > QDate.currentDate():
+                self._msg.setText(gettext("The specified date is greater than the current date!"))
+                self._msg.exec()
+                return
+            else:
+                if self._active != '':
+                    disable_active(self._active_f)
+                disable_source()
+                del_ams_path()
+                self._ok_date = str(self._date.date().toPython()).replace("-","/")
+                with open(ams_path, 'w') as _arch_f:
+                    _arch_f.write('# Sisyphus archive: ' + self._ok_date + "\n\n")
+                    _arch_f.write(archive_link+self._ok_date+archive_end[0] + "\n")
+                    _arch_f.write(archive_link+self._ok_date+archive_end[1] + "\n")
+                    _arch_f.write(archive_link+self._ok_date+archive_end[2] + "\n")
+                self._active_protocol = "http:"
+                self._active = '# Sisyphus archive: ' + self._ok_date
+                self._active_f = ams_path
+                self._lable.setText('<b>' + '# Sisyphus archive: ' + self._ok_date + '<b>')
+                _config = configparser.ConfigParser()
+                _config.add_section('mirror')
+                _config.set('mirror', 'activ', '# Sisyphus archive: ' + self._ok_date)
+                _config.set('mirror', 'file', self._active_f)
+                _config.set('mirror', 'protocol', self._active_protocol)
+                _config.add_section('options')
+                if self._checkbox.isChecked():
+                    _config.set('options', 'checkbox', '1')
+                else:
+                    _config.set('options', 'checkbox', '0')
+                if self._checkbox4.isChecked():
+                    _config.set('options', 'archive', '1')
+                    _config.set('options', 'arch_date', self._ok_date)
+                else:
+                    _config.set('options', 'archive', '0')
+                    _config.set('options', 'arch_date', '')
+                with open(conf_path, 'w') as configfile:
+                    _config.write(configfile)
+                self._msg.setText(gettext("Done!"))
+                self._msg.exec()
+                return
+        #-----------------------------------------
 
         #выбор протокола для установки
         _protocol = ''
@@ -346,6 +452,12 @@ class Window(QMainWindow):
                     _config.set('options', 'checkbox', '1')
                 else:
                     _config.set('options', 'checkbox', '0')
+                if self._checkbox4.isChecked():
+                    _config.set('options', 'archive', '1')
+                    _config.set('options', 'arch_date', self._ok_date)
+                else:
+                    _config.set('options', 'archive', '0')
+                    _config.set('options', 'arch_date', '')
                 with open(conf_path, 'w') as configfile:
                     _config.write(configfile)
                 if self._checkbox.isChecked():
@@ -390,6 +502,12 @@ class Window(QMainWindow):
                 _config.set('options', 'checkbox', '1')
             else:
                 _config.set('options', 'checkbox', '0')
+            if self._checkbox4.isChecked():
+                _config.set('options', 'archive', '1')
+                _config.set('options', 'arch_date', self._ok_date)
+            else:
+                _config.set('options', 'archive', '0')
+                _config.set('options', 'arch_date', '')
             with open(conf_path, 'w') as configfile:
                 _config.write(configfile)
             
