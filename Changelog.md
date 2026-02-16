@@ -1,5 +1,9 @@
 **Changelog**
 
+**bump version 0.7.1 (16.02.2026)**
+
+- GUI: fix: some errors
+
 **bump version 0.7.0 (09.02.2026)**
 
 - gui: added: switching to the Sisyphus archive

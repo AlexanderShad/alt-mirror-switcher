@@ -263,6 +263,7 @@ class Window(QMainWindow):
                     self._checkbox3.setEnabled(False)
                     self._combobox.setEnabled(False)
                     self._date.setVisible(True)
+                    self._date.setDate(QDate.fromString(_config.get('options', 'arch_date'),"yyyy/MM/dd"))
                     self._button.setText(gettext("set the date of the archive 'Sisyphus'"))
             except:
                 pass
@@ -321,12 +322,12 @@ class Window(QMainWindow):
                     _arch_f.write(archive_link+self._ok_date+archive_end[1] + "\n")
                     _arch_f.write(archive_link+self._ok_date+archive_end[2] + "\n")
                 self._active_protocol = "http:"
-                self._active = '# Sisyphus archive: ' + self._ok_date
+                self._active = ' Sisyphus archive: ' + self._ok_date
                 self._active_f = ams_path
-                self._lable.setText('<b>' + '# Sisyphus archive: ' + self._ok_date + '<b>')
+                self._lable.setText('<b>' + ' Sisyphus archive: ' + self._ok_date + '<b>')
                 _config = configparser.ConfigParser()
                 _config.add_section('mirror')
-                _config.set('mirror', 'activ', '# Sisyphus archive: ' + self._ok_date)
+                _config.set('mirror', 'activ', ' Sisyphus archive: ' + self._ok_date)
                 _config.set('mirror', 'file', self._active_f)
                 _config.set('mirror', 'protocol', self._active_protocol)
                 _config.add_section('options')
@@ -433,6 +434,7 @@ class Window(QMainWindow):
                 else:
                     del_ams_path()
                 with open(_new_list, 'r') as _old_f, open(_tmp_f, 'w') as _new_f:
+                    _new_f.write("#"+self._combobox.currentText()+"\n\n")
                     for _s in _old_f:
                         if "http:" in _s:
                             _new_f.write((_s.strip().replace("#", "", 1)).replace("http:","https:")+'\n')
