@@ -10,7 +10,7 @@ To elevate privileges, use the timeshift-launcher script.
 
 The *.desktop file uses the altlinux system icon.
 
-Link to main repository: https://altlinux.space/aleksandershad/alt-mirror-switcher
+Link to main repository: https://altlinux.space/shad/alt-mirror-switcher
 
 ___
 
@@ -26,4 +26,4 @@ ___
 
 Файл *.desktop использует системный значок altlinux.
 
-Ссылка на основной репозиторий: https://altlinux.space/aleksandershad/alt-mirror-switcher
+Ссылка на основной репозиторий: https://altlinux.space/shad/alt-mirror-switcher
